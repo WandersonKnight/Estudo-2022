@@ -3,6 +3,9 @@
 #include <string.h>
 
 #define OBJECT_LENGTH 20
+#define ERROR_CODE_1 "-1" //Input error
+#define ERROR_CODE_2 "-2" //Char overflow
+
 
 struct GenericList{
 	
@@ -38,46 +41,50 @@ char *getInput(){ //User input
 	char *objectName = malloc(sizeof(char) * OBJECT_LENGTH);
 	
 	if(fgets(objectName, OBJECT_LENGTH, stdin) == NULL){
-		
 		printf("Input error\n");
-		return "Input error";
-		
+		return ERROR_CODE_1;
 	}
 	else if(strchr(objectName, '\n') == NULL){
 		printf("Char overflow\n");
 		clearInput(objectName, OBJECT_LENGTH);
-		return "Char overflow";
+		return ERROR_CODE_2;
 	}
 	
 	objectName[strcspn(objectName, "\n")] = 0;
-
+	
+	if(objectName[0] == '\0'){
+		printf("Input is empty\n");
+		return ERROR_CODE_1;
+	}
+	
 	return objectName;
 	
 }
 
-int searchObject(struct GenericList *currentList, char *objectName){
+void searchObject(struct GenericList *currentList, char *objectName){
 	
 	int position = 0;
 	
 	do{
 		if(currentList == NULL){
-			free(objectName);
-			return -1;
+			printf("The list is empty\n\n");
+			position = -1;
 		}
 		else if(strcmp(currentList -> object, objectName) == 0){
-			free(objectName);
-			return position;
+			printf("Object found at position %d\n\n", position);
+			position = -1;
 		}
 		else{
 			currentList = currentList -> next;
 			position++;
 		}
 	}
-	while(currentList -> next != NULL);
+	while(currentList != NULL && position != -1);
 	
 	free(objectName);
-	return -1;
-	
+	if(position != -1)
+		printf("Object not found\n\n");
+
 }
 
 void insertObject(struct GenericList **currentList, char *objectName){
@@ -104,36 +111,42 @@ void insertObject(struct GenericList **currentList, char *objectName){
 	
 }
 
-int removeObject(struct GenericList **currentList, char *objectName){
+void removeObject(struct GenericList **currentList, char *objectName){
 	
 	struct GenericList *aux = *currentList;
 	struct GenericList *temp = NULL;
-	
+	int loop = 1;
+
 	do{
+		
 		if(*currentList == NULL){
-			return -1;
+			printf("The list is empty\n\n");
+			loop = 0;
 		}
 		else if(strcmp((*currentList) -> object, objectName) == 0){
+			printf("Object removed\n\n");
 			temp = *currentList;
 			*currentList  = (*currentList) -> next;
 			free(temp);
-			free(objectName);
-			return 1;
+			loop = 0;
 		}
 		else if(aux -> next != NULL && strcmp(aux -> next -> object, objectName) == 0){
+			printf("Object removed\n\n");
 			temp = aux -> next;
 			aux -> next = aux -> next -> next;
 			free(temp);
-			free(objectName);
-			return 1;
-		}	
-		aux = aux -> next;
+			loop = 0;
+		}
+		else if(aux -> next != NULL){
+			aux = aux -> next;
+		}
 	}
-	while(aux -> next != NULL);
+	while(loop == 1 && aux -> next != NULL);
 
 	free(objectName);
-	return -1;
-	
+	if(loop == 1)
+		printf("Object not found\n\n");
+
 }
 
 void showObject(struct GenericList *currentList){
@@ -180,8 +193,6 @@ int main(){
 		else{
 
 			menuChoice[strcspn(menuChoice, "\n")] = 0;
-
-			int position;
 			
 			switch(atoi(menuChoice)){
 				
@@ -190,16 +201,12 @@ int main(){
 					break;
 				case 1:
 					printf("Name the object you want to search: ");
-					position = searchObject(linkedObjects, getInput());
-					if(position == -1)
-						printf("Object not found\n\n");
-					else
-						printf("Object found at position %d\n\n", position);
+					searchObject(linkedObjects, getInput());			
 					break;
 				case 2:
 					printf("Name the object to be inserted: ");
 					strcpy(objectName, getInput());
-					if(strcmp(objectName, "Char overflow") == 0 || strcmp(objectName, "Input error") == 0){
+					if(strcmp(objectName, ERROR_CODE_1) == 0 || strcmp(objectName, ERROR_CODE_2) == 0){
 						printf("Try again \n\n");
 					}
 					else{
@@ -209,10 +216,13 @@ int main(){
 					break;
 				case 3:
 					printf("Name the object to be removed: ");
-					if(removeObject(&linkedObjects, getInput()) == -1)
-						printf("Object not found\n\n");
-					else
-						printf("Object removed\n\n");
+					strcpy(objectName, getInput());
+					if(strcmp(objectName, ERROR_CODE_1) == 0|| strcmp(objectName, ERROR_CODE_2) == 0){
+						printf("Try again \n\n");
+					}
+					else{
+						removeObject(&linkedObjects, objectName);
+					}
 					break;
 				case 4:
 					showObject(linkedObjects);
