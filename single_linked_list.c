@@ -50,7 +50,7 @@ char *getInput(){ //User input
 		return ERROR_CODE_2;
 	}
 	
-	objectName[strcspn(objectName, "\n")] = 0;
+	objectName[strcspn(objectName, '\n')] = 0;
 	
 	if(objectName[0] == '\0'){
 		printf("Input is empty\n");
