@@ -1,13 +1,13 @@
 class Math:
 
-    def Multiply(num1, num2):
+    def multiply(num1, num2):
         return int(num1) * int(num2)
 
-    def Add(num1, num2):
+    def add(num1, num2):
         return int(num1) + int(num2)
 
-    def Subtract(num1, num2):
+    def subtract(num1, num2):
         return int(num1) - int(num2)
 
-    def Power(num1, num2):
+    def power(num1, num2):
         return int(num1) ** int(num2)
