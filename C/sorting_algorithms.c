@@ -1,4 +1,3 @@
-<<<<<<<< HEAD:C/C/sorting_algorithms.c
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
