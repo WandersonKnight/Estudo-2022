@@ -3,8 +3,6 @@
 import webbrowser
 import sys
 
-print(len(sys.argv))
-
 if len(sys.argv) < 2:
     raise ValueError("Invalid Input, adress argument missing")
    
